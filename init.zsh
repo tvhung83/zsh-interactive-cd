@@ -1,4 +1,10 @@
 #!/usr/bin/env zsh
+#
+# Copyright 2017-2018 Henry Chang
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 __zic_fzf_prog() {
   [ -n "$TMUX_PANE" ] && [ "${FZF_TMUX:-0}" != 0 ] && [ ${LINES:-40} -gt 15 ] \
@@ -17,7 +23,7 @@ __zic_matched_subdir_list() {
       length=0
     fi
     find -L "$dir" -mindepth 1 -maxdepth 1 -type d 2>/dev/null \
-        | cut -b $(( ${length} + 2 ))- | sed '/^$/d' | while read -r line; do
+        | cut -b $(( ${length} + 2 ))- | \sed '/^$/d' | while read -r line; do
       if [[ "${line[1]}" == "." ]]; then
         continue
       fi
@@ -32,7 +38,7 @@ __zic_matched_subdir_list() {
     seg=$(basename -- "$1")
     starts_with_dir=$( \
       find -L "$dir" -mindepth 1 -maxdepth 1 -type d \
-          2>/dev/null | cut -b $(( ${length} + 2 ))- | sed '/^$/d' \
+          2>/dev/null | cut -b $(( ${length} + 2 ))- | \sed '/^$/d' \
           | while read -r line; do
         if [[ "${seg[1]}" != "." && "${line[1]}" == "." ]]; then
           continue
@@ -46,7 +52,7 @@ __zic_matched_subdir_list() {
       echo "$starts_with_dir"
     else
       find -L "$dir" -mindepth 1 -maxdepth 1 -type d \
-          2>/dev/null | cut -b $(( ${length} + 2 ))- | sed '/^$/d' \
+          2>/dev/null | cut -b $(( ${length} + 2 ))- | \sed '/^$/d' \
           | while read -r line; do
         if [[ "${seg[1]}" != "." && "${line[1]}" == "." ]]; then
           continue
@@ -144,4 +150,7 @@ zic-completion() {
 }
 
 zle -N zic-completion
-bindkey '^I' zic-completion
+if [ -z $zic_custom_binding ]; then
+  zic_custom_binding='^I'
+fi
+bindkey "${zic_custom_binding}" zic-completion
